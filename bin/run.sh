@@ -7,4 +7,4 @@ arecord -t wav -r 16000 -c 1 -f S16_LE -d 0 -N -- - | \
         --labels=../data/models/1/conv_labels.txt \
         --num_outputs=1 | \
     python3.6 -u ../src/filter/filter.py | \
-    python3.6 -u ../src/publisher/publish.py
+    python3.6 -u ../src/publisher/publisher.py
