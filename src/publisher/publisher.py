@@ -17,6 +17,7 @@ def main(FLAGS, args):
             line = input()
         except EOFError:
             break
+        print(line)
         pub.publish(line)
 
 

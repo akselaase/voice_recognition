@@ -79,6 +79,7 @@ def run_graph(wav_data, labels, input_layer_name, output_layer_name,
             line = '{} {}'.format(human_string, score)
             logging.debug('Printed {} to stdout'.format(line))
             print(line)
+        print('---')
 
         return 0
 
