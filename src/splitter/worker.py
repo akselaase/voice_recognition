@@ -18,19 +18,21 @@ def find_loudest_interval(data, count, maxlength):
     return maxind
 
 
-def process_stream(stream, samplerate, auto_adjust=0, data_cb=None):
+def process_stream(stream, samplerate, **kwargs):
+    data_cb = kwargs.get('data_cb', None)
+    auto_adjust = kwargs.get('auto_adjust', 0)
+    # The minimum value of the window to be considered a word
+    wordthreshold = kwargs.get('t_loudness', 0.15)
+    # The maximum value of the window to be considered silence
+    silencethreshold = kwargs.get('t_silence', 0.03)
+
     minwordsamples = int(0.05 * samplerate)
     minsilencesamples = int(0.1 * samplerate)
-    # Clip words to 1 seconds with maximized volume
+    # Clip words to 0.75 seconds with maximized volume
     maxclipsamples = int(0.75 * samplerate)
     pre_window_samples = maxclipsamples // 4
     post_window_samples = maxclipsamples // 4
     minclipsamples = pre_window_samples + minwordsamples + post_window_samples
-
-    # The minimum value of the window to be considered a word
-    wordthreshold = 5000
-    # The maximum value of the window to be considered silence
-    silencethreshold = 500
 
     if auto_adjust > 0:
         average = 0
@@ -39,12 +41,17 @@ def process_stream(stream, samplerate, auto_adjust=0, data_cb=None):
         adjust_samples = math.ceil(auto_adjust * samplerate)
         for sample in itertools.islice(stream, adjust_samples):
             average += sample ** 2
-        average = math.sqrt(average / adjust_samples)
+        average = math.sqrt(average / adjust_samples) / 32767.0
         wordthreshold = average * 10
         silencethreshold = average * 2
-        logging.info(('Average amplitude after {} seconds was {:.1f}, setting ' +
-                      'word threshold to {:.1%} and silence threshold to {:.1%} of max.').format(
-            auto_adjust, average, wordthreshold / 32767, silencethreshold / 32767))
+        logging.info('Average amplitude after {} seconds was {:.1f}'.format(
+            auto_adjust, average))
+
+    logging.debug('Word threshold is {:.1%} and silence threshold is {:.1%} of max.'.format(
+        wordthreshold, silencethreshold))
+
+    wordthreshold *= 32767
+    silencethreshold *= 32767
 
     windowsamples = minwordsamples
     wordthreshold = windowsamples * wordthreshold ** 2
