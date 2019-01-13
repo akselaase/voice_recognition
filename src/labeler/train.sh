@@ -1,6 +1,6 @@
 #!/bin/bash
 echo Training model to recognize "$(cat wanted_words.txt)"
-python3.6 ./tf/train.py \
+python ./tf/train.py \
     --wanted_words="$(cat ./wanted_words.txt)" \
     --max_samples_per_word=5000 \
     --testing_percentage=10 \
