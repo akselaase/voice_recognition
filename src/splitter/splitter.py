@@ -8,7 +8,7 @@ import argparse
 import tempfile
 from worker import process_stream
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]: splitter.py: %(message)s')
 
 
@@ -33,27 +33,30 @@ def readwav(source):
 
         yield rate
 
+        buff_size = 64
         while running:
-            data = source.readframes(1)
-            if len(data) == 0:
+            data = source.readframes(buff_size)
+            num_samples = len(data) // 2
+            if num_samples == 0:
                 logging.info('Read zero frames from input file.')
                 return
-            sample, = struct.unpack('<h', data)
-            yield sample
+            samples = struct.unpack('<{}h'.format(num_samples), data)
+            yield from samples
 
 
 def save_loud_area(rate, data):
     global file_count
     outfile = os.path.join(FLAGS.output_dir, str(file_count) + '.wav')
     with wave.open(outfile, mode='wb') as target:
+        num_samples = len(data)
         target.setnchannels(1)
         target.setsampwidth(2)
         target.setframerate(rate)
-        target.setnframes(len(data))
-        for sample in data:
-            conv = struct.pack('<h', sample)
-            target.writeframesraw(conv)
-    logging.debug('Written {} samples to {}'.format(len(data), outfile))
+        target.setnframes(num_samples)
+        # TODO: test this change
+        conv = struct.pack('<{}h'.format(num_samples), *data)
+        target.writeframesraw(conv)
+    logging.debug('Written {} samples to {}'.format(num_samples, outfile))
     print(outfile, flush=True)
     file_count += 1
 
