@@ -1,1 +1,1 @@
-up,down,yes,no,left,right,on,off,zero
+alpha,bravo,charlie,delta,echo,foxtrot,golf,hotel,india,juliett
