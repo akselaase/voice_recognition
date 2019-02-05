@@ -1,0 +1,12 @@
+_silence_
+_unknown_
+alpha
+bravo
+charlie
+delta
+echo
+foxtrot
+golf
+hotel
+india
+juliett
