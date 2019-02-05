@@ -1,0 +1,4 @@
+18000 iterations on ARSE dataset
+Words alpha-juliett
+All samples from each word as of tue feb. 5
+25% unknown percentage
