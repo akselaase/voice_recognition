@@ -11,6 +11,8 @@ signal.signal(signal.SIGINT, lambda _, __: sys.exit())
 
 
 def handle_labeling(confidences):
+    # Sort word/confidence pairs by confidence descending
+    # and check if the first one passes our thresholds
     confidences.sort(key=lambda t: t[1], reverse=True)
     first = confidences[0]
     if first[1] < threshold:
@@ -26,6 +28,15 @@ def handle_labeling(confidences):
 
     logging.debug('Printed {} to stdout'.format(word))
     print(first[0])
+
+# Read lines from stdin in the following format:
+#   word1, 0.75
+#   word2, 0.66
+#   word3, 0.01
+#   ---
+# (repeat)
+# Add each word/confidence pari to a list, and when '---'
+# is encountered, process this list and start over.
 
 
 confidences = []
