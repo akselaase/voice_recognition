@@ -185,9 +185,17 @@ def main(_):
     confusion_matrix = tf.confusion_matrix(
         ground_truth_input, predicted_indices, num_classes=label_count)
     evaluation_step = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+    cumulative_cross_entropy = tf.get_variable(
+        'cumulative_cross_entropy', dtype=tf.float32, initializer=tf.constant(0, dtype=tf.float32),
+        collections=[tf.GraphKeys.GLOBAL_VARIABLES])
+    cumulative_evaluation_accuracy = tf.get_variable(
+        'cumulative_evaluation_accuracy', dtype=tf.float32, initializer=tf.constant(0, dtype=tf.float32),
+        collections=[tf.GraphKeys.GLOBAL_VARIABLES])
+
     with tf.get_default_graph().name_scope('eval'):
-        tf.summary.scalar('cross_entropy', cross_entropy_mean)
-        tf.summary.scalar('accuracy', evaluation_step)
+        tf.summary.scalar('cross_entropy', cumulative_cross_entropy)
+        tf.summary.scalar('accuracy', cumulative_evaluation_accuracy)
 
     global_step = tf.train.get_or_create_global_step()
     increment_global_step = tf.assign(global_step, global_step + 1)
@@ -225,6 +233,13 @@ def main(_):
     # Training loop.
     training_steps_max = np.sum(training_steps_list)
     for training_step in xrange(start_step, training_steps_max + 1):
+        # Clear our cumulative variables
+        _, _ = sess.run([
+            cumulative_evaluation_accuracy.assign(
+                tf.constant(0, dtype=tf.float32)),
+            cumulative_cross_entropy.assign(
+                tf.constant(0, dtype=tf.float32)),
+        ])
         # Figure out what the current learning rate is.
         training_steps_sum = 0
         for i in range(len(training_steps_list)):
@@ -232,18 +247,20 @@ def main(_):
             if training_step <= training_steps_sum:
                 learning_rate_value = learning_rates_list[i]
                 break
-        # Pull the audio samples we'll use for training.
-        train_fingerprints, train_ground_truth = audio_processor.get_data(
+        # Process all the minibatches
+        for train_fingerprints, train_ground_truth in audio_processor.get_batches(
             FLAGS.batch_size, 0, model_settings, FLAGS.background_frequency,
-            FLAGS.background_volume, time_shift_samples, 'training', sess)
+                FLAGS.background_volume, time_shift_samples, 'training', sess):
+            percentage_samples = len(
+                train_fingerprints) / audio_processor.set_size('training')
         # Run the graph with this batch of training data.
-        train_summary, train_accuracy, cross_entropy_value, _, _ = sess.run(
+            _, _, _ = sess.run(
             [
-                merged_summaries,
-                evaluation_step,
-                cross_entropy_mean,
+                    cumulative_evaluation_accuracy.assign_add(
+                        evaluation_step * percentage_samples),
+                    cumulative_cross_entropy.assign_add(
+                        cross_entropy_mean * percentage_samples),
                 train_step,
-                increment_global_step,
             ],
             feed_dict={
                 fingerprint_input: train_fingerprints,
@@ -251,8 +268,18 @@ def main(_):
                 learning_rate_input: learning_rate_value,
                 dropout_prob: 0.5
             })
+
+        # Save summary
+        train_summary, train_accuracy, cross_entropy_value, _ = sess.run(
+            [
+                merged_summaries,
+                cumulative_evaluation_accuracy,
+                cumulative_cross_entropy,
+                increment_global_step
+            ])
+
         train_writer.add_summary(train_summary, training_step)
-        tf.logging.info('Step #%d: rate %f, accuracy %.1f%%, cross entropy %f' %
+        tf.logging.info('Epoch #%d: rate %f, accuracy %.1f%%, cross entropy %f' %
                         (training_step, learning_rate_value, train_accuracy * 100,
                          cross_entropy_value))
         is_last_step = (training_step == training_steps_max)
@@ -276,7 +303,8 @@ def main(_):
                 validation_writer.add_summary(
                     validation_summary, training_step)
                 batch_size = min(FLAGS.batch_size, set_size - i)
-                total_accuracy += (validation_accuracy * batch_size) / set_size
+                total_accuracy += (validation_accuracy *
+                                   batch_size) / set_size
                 if total_conf_matrix is None:
                     total_conf_matrix = conf_matrix
                 else:

@@ -453,6 +453,17 @@ class AudioProcessor(object):
         """
         return len(self.data_index[mode])
 
+    def get_batches(self, batch_size, offset, model_settings, background_frequency,
+                    background_volume_range, time_shift, mode, sess):
+        all_data, all_labels = self.get_data(-1, offset, model_settings, background_frequency,
+                                             background_volume_range, time_shift, mode, sess)
+        indices = set(range(len(all_data)))
+        while len(indices) > 0:
+            batch_indices = random.sample(
+                indices, min(batch_size, len(indices)))
+            yield all_data[batch_indices], all_labels[batch_indices]
+            indices.difference_update(batch_indices)
+
     def get_data(self, how_many, offset, model_settings, background_frequency,
                  background_volume_range, time_shift, mode, sess):
         """Gather samples from the data set, applying transformations as needed.
