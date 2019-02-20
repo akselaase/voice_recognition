@@ -9,7 +9,7 @@ rope = "*"
 autopep8 = "*"
 
 [packages]
-tensorflow-gpu = "*"
+tensorflow = "*"
 
 [requires]
 python_version = "3.5"
