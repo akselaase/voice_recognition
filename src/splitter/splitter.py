@@ -72,52 +72,28 @@ def main():
     loudness = 30
     silence = 5
     if FLAGS.thresholds is not None:
-        auto_adjust = False
         parts = FLAGS.thresholds.split(',')
         if len(parts) == 0:
             logging.warn(
                 "Couldn't parse thresholds, resorting to auto adjustment.")
-            auto_adjust = True
-        try:
-            loudness = float(parts[0])
-            if len(parts) > 1:
-                silence = float(parts[1])
-        except ValueError:
-            logging.warn(
-                "Couldn't parse thresholds, resorting to auto adjustment.")
-            auto_adjust = True
-
-    files = []
-    if FLAGS.input == '-':
-        files = [sys.stdin.buffer]
-    elif os.path.exists(FLAGS.input):
-        if os.path.isdir(FLAGS.input):
-            for f in os.listdir(FLAGS.input):
-                files.append(os.path.join(FLAGS.input, f))
-        elif os.path.isfile(FLAGS.input):
-            files.append(FLAGS.input)
-    else:
-        logging.error("Didn't find file {}".format(FLAGS.input))
-        return
-
-    for f in files:
-        close = False
-        if type(f) is str:
-            logging.info('Running splitter.py on "{}"'.format(f))
-            f = open(f, 'rb')
-            close = True
-
-        stream = readwav(f)
-        rate = next(stream)
-        if auto_adjust:
-            process_stream(stream, rate, data_cb=save_loud_area,
-                           auto_adjust=FLAGS.auto_adjust)
         else:
-            process_stream(stream, rate, data_cb=save_loud_area, t_loudness=loudness /
-                           100, t_silence=silence / 100)
+            try:
+                loudness = float(parts[0])
+                if len(parts) > 1:
+                    silence = float(parts[1])
+                auto_adjust = False
+            except ValueError:
+                logging.warn(
+                    "Couldn't parse thresholds, resorting to auto adjustment.")
 
-        if close:
-            f.close()
+    stream = readwav(sys.stdin.buffer)
+    rate = next(stream)
+    if auto_adjust:
+        process_stream(stream, rate, data_cb=save_loud_area,
+                       auto_adjust_duration=FLAGS.auto_adjust)
+    else:
+        process_stream(stream, rate, data_cb=save_loud_area,
+                       t_loudness=loudness / 100, t_silence=silence / 100)
 
     logging.info('Exiting splitter.py')
     if file_count == 0:

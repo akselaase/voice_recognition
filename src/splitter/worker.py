@@ -20,7 +20,7 @@ def find_loudest_interval(data, count, maxlength):
 
 def process_stream(stream, samplerate, **kwargs):
     data_cb = kwargs.get('data_cb', None)
-    auto_adjust = kwargs.get('auto_adjust', 0)
+    auto_adjust = kwargs.get('auto_adjust_duration', 0)
     # The minimum value of the window to be considered a word
     wordthreshold = kwargs.get('t_loudness', 0.15)
     # The maximum value of the window to be considered silence
