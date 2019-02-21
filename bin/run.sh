@@ -7,6 +7,8 @@ MODEL=arse
 RECORDER="rec -q -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
 PYTHON=python3.5
 
+cd $(dirname $(locate voice_recognition/bin/run.sh))
+
 cat ../data/models/$MODEL/desc.txt
 
 $RECORDER | \
