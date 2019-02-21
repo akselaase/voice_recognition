@@ -1,2 +1,4 @@
 *.pyc
-**/aiy_speech_dataset/
+*.wav
+speech_commands_train/
+aiy_speech_dataset/

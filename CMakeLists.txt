@@ -38,7 +38,5 @@ catkin_package(
 	message_runtime ascend_msgs geometry_msgs
 )
 
-catkin_install_python(PROGRAMS bin/hello 
-	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-catkin_install_python(PROGRAMS bin/node_name 
-	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# catkin_install_python(PROGRAMS bin/rostest.py
+#	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

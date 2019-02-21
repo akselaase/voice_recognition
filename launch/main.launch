@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="voice_recognition" name="all" type="run.sh" cwd="node" />
+</launch>

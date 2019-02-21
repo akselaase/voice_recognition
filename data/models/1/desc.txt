@@ -1,0 +1,3 @@
+Words: up, down, stop
+Number of training samples: all
+Iterations: 18000
