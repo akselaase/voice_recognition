@@ -16,8 +16,9 @@ def equals_chain(candidate):
 
 known_words = ['alpha', 'bravo', 'charlie', 'delta', 'echo',
                'foxtrot', 'golf', 'hotel', 'india', 'juliett']
-input_chains = list(
-    map(list, zip(known_words, known_words[1:] + known_words[0:1])))
+#input_chains = list(
+#    map(list, zip(known_words, known_words[1:] + known_words[0:1])))
+input_chains = list(map(lambda s: [s], known_words))
 output_commands = list(map(str, range(10)))
 
 assert len(input_chains) == len(output_commands)
