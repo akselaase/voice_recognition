@@ -15,5 +15,6 @@ $RECORDER | \
         --graph=../data/models/$MODEL/graph.pb \
         --labels=../data/models/$MODEL/conv_labels.txt \
         --num_outputs=2 | \
-    $PYTHON -u ../src/filter/confidence_filter.py  | \
+    $PYTHON -u ../src/filter/confidence_filter.py | \
+    $PYTHON -u ../src/filter/chain_filter.py | \
     $PYTHON -u ../src/publisher/publisher.py
