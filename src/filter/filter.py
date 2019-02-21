@@ -4,8 +4,8 @@ import logging
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:   filter.py: %(message)s')
 
-threshold = 0.75
-runnerup_diff = 0.50
+threshold = 0.6
+runnerup_diff = 0.4
 
 signal.signal(signal.SIGINT, lambda _, __: sys.exit())
 
@@ -15,16 +15,15 @@ def handle_labeling(confidences):
     # and check if the first one passes our thresholds
     confidences.sort(key=lambda t: t[1], reverse=True)
     first = confidences[0]
+    second = confidences[1] if len(confidences) else ('', 0)
     if first[1] < threshold:
         logging.info("'{}' ({:.2%}) didn't pass threshold.".format(*first))
         return
-    elif len(confidences) > 1:
-        second = confidences[1]
-        if first[1] - second[1] < runnerup_diff:
-            logging.info("'{}' ({:.2%}) didn't pass filter, '{}' ({:.2%}) was too close.".format(
-                *first, *second
-            ))
-            return
+    if first[1] - second[1] < runnerup_diff:
+        logging.info("'{}' ({:.2%}) didn't pass filter, '{}' ({:.2%}) was too close.".format(
+            *first, *second
+        ))
+        return
 
     logging.debug('Printed {} to stdout'.format(word))
     print(first[0])
@@ -35,7 +34,7 @@ def handle_labeling(confidences):
 #   word3, 0.01
 #   ---
 # (repeat)
-# Add each word/confidence pari to a list, and when '---'
+# Add each word/confidence pair to a list, and when '---'
 # is encountered, process this list and start over.
 
 
