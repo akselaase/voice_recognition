@@ -15,18 +15,16 @@ def handle_labeling(confidences):
     # and check if the first one passes our thresholds
     confidences.sort(key=lambda t: t[1], reverse=True)
     first = confidences[0]
-    second = confidences[1] if len(confidences) else ('', 0)
+    second = confidences[1] if len(confidences) > 1 else ('', 0)
     if first[1] < threshold:
         logging.info("'{}' ({:.2%}) didn't pass threshold.".format(*first))
-        return
-    if first[1] - second[1] < runnerup_diff:
+    elif first[1] - second[1] < runnerup_diff:
         logging.info("'{}' ({:.2%}) didn't pass filter, '{}' ({:.2%}) was too close.".format(
             *first, *second
         ))
-        return
-
-    logging.debug('Printed {} to stdout'.format(word))
-    print(first[0])
+    else:
+        logging.debug('Printed {} to stdout'.format(first[0]))
+        print(first[0])
 
 # Read lines from stdin in the following format:
 #   word1, 0.75
