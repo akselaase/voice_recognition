@@ -2,7 +2,7 @@ import sys
 import signal
 import logging
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
-                    format='[%(levelname)s]:   filter.py: %(message)s')
+                    format='[%(levelname)s]:filter.py: %(message)s')
 
 threshold = 0.6
 runnerup_diff = 0.4
