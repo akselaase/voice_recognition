@@ -9,13 +9,13 @@ import std_msgs
 def main(FLAGS, args):
     rospy.init_node('voice_recognition')
     pub = rospy.Publisher('/ai/voice/command',
-                          std_msgs.msg.String, queue_size=1)
+                          std_msgs.msg.String, queue_size=10, latch=True, tcp_nodelay=True)
 
     line = ''
     while not rospy.is_shutdown():
         try:
             line = input()
-        except EOFError:
+        except (EOFError, KeyboardInterrupt):
             break
         print(line)
         pub.publish(line)
