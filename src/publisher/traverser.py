@@ -1,4 +1,6 @@
+import os
 import sys
+from time import sleep
 from tree import Tree, fromList
 import actions
 import logging
@@ -24,36 +26,48 @@ chain = ['root', None,
 binary = ['root', None,
           ['movement', None,
            ['high level movement', None,
+            ['takeoff & landing', None, 
+             ('start', None),
+             ('stop', None)],
+           ['in flight', None, 
             ('search', actions.map_world),
             ('objectives', actions.move_to_objectives)
             ],
-           ['low level movement',
-            ('flip', actions.do_a_flip),
+           ],
+           ['low level movement', None,
+            ('do a flip', actions.do_a_flip),
             ('freeze', actions.freeze)
             ]
            ],
-          ['protection',
+          ['protection', None,
            ('heal', actions.heal_pilot),
            ('distract', actions.distract_enemy_drones)
            ]
           ]
 
-root = fromList(chain)
+root = fromList(binary)
 current = root
 
-print("traverser.py: in tree '{}'".format(current.get_name()))
+#print("traverser.py: in tree '{}'".format(current.get_name()))
 current.print_tree()
+
+def clear():
+    os.system('clear')
 
 for line in sys.stdin:
     cmd = line.strip()
     print()
-    print('Received command', cmd)
+    #print('Received command', cmd)
     logging.debug('Received command {}'.format(cmd))
 
     if cmd == 'root':
         current = root
     elif cmd == 'up':
         current = current.parent
+    elif cmd == 'left':
+        current = current.children[0]
+    elif cmd == 'right':
+        current = current.children[-1]
     else:
         child = current.get_child_by_name(cmd, recursive=True)
         if not child:
@@ -62,12 +76,12 @@ for line in sys.stdin:
             current = child
 
     if not current.has_children():
-        print('traverser.py: You selected', current.get_name())
+        print('You selected', current.get_name())
         action = current.get_value()
-        action()
-        print('--------------------------')
-        print()
+        if action:
+            action()
+        input()
         current = root
 
-    print("traverser.py: in tree '{}'".format(current.get_name()))
+    clear()
     current.print_tree()
