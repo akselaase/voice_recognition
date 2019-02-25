@@ -44,10 +44,10 @@ def process_stream(stream, samplerate, **kwargs):
         average = math.sqrt(average / adjust_samples) / 32768.0
         wordthreshold = average * 10
         silencethreshold = average * 2
-        logging.info('Average amplitude after {} seconds was {:.1f}'.format(
+        logging.info('Average amplitude after {} seconds was {:.3f}'.format(
             auto_adjust, average))
 
-    logging.debug('Word threshold is {:.1%} and silence threshold is {:.1%}.'.format(
+    logging.info('Word threshold is {:.3%} and silence threshold is {:.3%}.'.format(
         wordthreshold, silencethreshold))
 
     wordthreshold *= 32767
