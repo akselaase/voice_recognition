@@ -26,10 +26,10 @@ def process_stream(stream, samplerate, **kwargs):
     # The maximum value of the window to be considered silence
     silencethreshold = kwargs.get('t_silence', 0.03)
 
-    minwordsamples = int(0.05 * samplerate)
+    minwordsamples = int(0.1 * samplerate)
     minsilencesamples = int(0.1 * samplerate)
-    # Clip words to 0.75 seconds with maximized volume
-    maxclipsamples = int(0.75 * samplerate)
+    # Clip words to 1.0 seconds with maximized volume
+    maxclipsamples = int(1.0 * samplerate)
     pre_window_samples = maxclipsamples // 4
     post_window_samples = maxclipsamples // 4
     minclipsamples = pre_window_samples + minwordsamples + post_window_samples
