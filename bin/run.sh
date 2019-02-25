@@ -3,16 +3,16 @@ export TF_CPP_MIN_LOG_LEVEL=3
 export ROS_IP=$(ip route get 1 | awk '{print $7;exit}')
 export ROS_MASTER_URI=http://localhost:11311/
 export AUDIODEVICE=hw:CARD=UR22,DEV=0
-MODEL=arse
+MODEL=arse_100k
 #RECORDER="arecord -t wav -r 16000 -c 1 -f S16_LE -d 0 -N -- -"
 RECORDER="rec -q -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
 PYTHON="python3.5"
 TEE="tee rec.wav"
 
-[[ -f "$PWD/run.sh" ]] || echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\"" && exit 1
+if [[ ! -f "$PWD/run.sh" ]]; then echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\""; exit 1; fi
 
 if [[ ! -z "$1" ]]; then
-    RECORDER="(pv -q -L 16000 < $1)"
+    RECORDER="eval pv -q -L 16000 < $1"
     TEE="cat"
 else
     echo "Double check that the script is using the correct audio input device" \
@@ -28,5 +28,5 @@ $RECORDER | $TEE | \
         --labels=../data/models/$MODEL/conv_labels.txt \
         --num_outputs=2 | \
     $PYTHON -u ../src/filter/confidence_filter.py | \
-    $PYTHON -u ../src/filter/chain_filter.py | \
-    $PYTHON -u ../src/publisher/publisher.py
+    cat # $PYTHON -u ../src/filter/chain_filter.py | \
+    # $PYTHON -u ../src/publisher/publisher.py

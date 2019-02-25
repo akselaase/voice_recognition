@@ -9,7 +9,7 @@ import tempfile
 from worker import process_stream
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
-                    format='[%(levelname)s]: splitter.py: %(message)s')
+                    format='[%(levelname)s]:splitter.py: %(message)s')
 
 
 running = True
@@ -62,7 +62,7 @@ def save_loud_area(rate, data):
 
 
 def main():
-    logging.info('Started splitter.py')
+    logging.debug('Started splitter.py')
     signal.signal(signal.SIGINT, sighandler)
 
     if not os.path.exists(FLAGS.output_dir):
@@ -95,7 +95,7 @@ def main():
         process_stream(stream, rate, data_cb=save_loud_area,
                        t_loudness=loudness / 100, t_silence=silence / 100)
 
-    logging.info('Exiting splitter.py')
+    logging.debug('Exiting splitter.py')
     if file_count == 0:
         sys.exit(1)
 
