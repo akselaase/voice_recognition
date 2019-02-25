@@ -1,7 +1,7 @@
 #!/bin/bash
 export TF_CPP_MIN_LOG_LEVEL=3
-export ROS_IP=192.168.0.105
-export ROS_MASTER_URI=http://192.168.0.101:11311/
+export ROS_IP=$(ip route get 1 | awk '{print $7;exit}')
+export ROS_MASTER_URI=http://localhost:11311/
 export AUDIODEVICE=hw:CARD=UR22,DEV=0
 MODEL=arse
 #RECORDER="arecord -t wav -r 16000 -c 1 -f S16_LE -d 0 -N -- -"
@@ -9,12 +9,14 @@ RECORDER="rec -q -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
 PYTHON="python3.5"
 TEE="tee rec.wav"
 
-cd /home/simengangstad/Ascend/catkin_ws/src/voice_recognition/bin
-# cd $(dirname $(locate voice_recognition/bin/run.sh))
+[[ -f "$PWD/run.sh" ]] || echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\"" && exit 1
 
 if [[ ! -z "$1" ]]; then
-    RECORDER="cat $1"
+    RECORDER="(pv -q -L 16000 < $1)"
     TEE="cat"
+else
+    echo "Double check that the script is using the correct audio input device" \
+         "by using the built in PulseAudio settings panel or pavucontrol"
 fi
 
 cat ../data/models/$MODEL/desc.txt
