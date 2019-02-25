@@ -325,6 +325,7 @@ class AudioProcessor(object):
         self.background_data = []
         background_dir = os.path.join(self.data_dir, BACKGROUND_NOISE_DIR_NAME)
         if not os.path.exists(background_dir):
+            tf.logging.info("Didn't find any background noise directory")
             return self.background_data
         with tf.Session(graph=tf.Graph()) as sess:
             wav_filename_placeholder = tf.placeholder(tf.string, [])
@@ -341,6 +342,8 @@ class AudioProcessor(object):
             if not self.background_data:
                 raise Exception(
                     'No background wav files were found in ' + search_path)
+            else:
+                tf.logging.info("Found {} background audio files".format(len(self.background_data)))
 
     def prepare_processing_graph(self, model_settings, summaries_dir):
         """Builds a TensorFlow graph to apply the input distortions.
