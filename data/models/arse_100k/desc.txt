@@ -1,0 +1,1 @@
+105k iterations on augmented ARSE dataset, with filler words and background audio from AIY. Each wanted word was augmented to 5000 samples. Model was trained with 100k+5k iterations with a batch size of 32.

@@ -6,8 +6,13 @@ python ./tf/train.py \
     --testing_percentage=10 \
     --validation_percentage=10 \
     --unknown_percentage=25 \
+    --silence_percentage=15 \
+    --batch_size=32 \
     --data_url= \
-    --data_dir=../../data/samples/arse \
+    --data_dir=../../data/samples/arse_augmented \
     --summaries_dir=training/retrain_logs \
     --train_dir=training/speech_commands_train \
-    --start_checkpoint=$1
+    --start_checkpoint=$1 \
+    --how_many_training_steps=100000,5000 \
+    --save_step_interval=1600 \
+    --eval_step_interval=1600
