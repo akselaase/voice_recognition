@@ -3,7 +3,7 @@ export TF_CPP_MIN_LOG_LEVEL=3
 export ROS_IP=$(ip route get 1 | awk '{print $7;exit}')
 export ROS_MASTER_URI=http://localhost:11311/
 export AUDIODEVICE=hw:CARD=UR22,DEV=0
-MODEL=arse_100k
+MODEL=arse_220k
 #RECORDER="arecord -t wav -r 16000 -c 1 -f S16_LE -d 0 -N -- -"
 RECORDER="rec -q -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
 PYTHON="python3.5"
