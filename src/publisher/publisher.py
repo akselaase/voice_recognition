@@ -18,7 +18,7 @@ try:
     def publish(line):
         print(line)
         pub.publish(line)
-    exit_condition = pub.is_shutdown
+    exit_condition = rospy.is_shutdown
 except ImportError:
     logging.warn(
         'Failed to import rospy or std_msgs, will publish to stdout instead.')
