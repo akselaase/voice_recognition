@@ -1,5 +1,6 @@
 # TODO: Do something more than just echo stdin to the ROS topic.
 
+from __future__ import print_function
 import sys
 import argparse
 import logging
@@ -23,11 +24,12 @@ except ImportError:
     logging.warn(
         'Failed to import rospy or std_msgs, will publish to stdout instead.')
     publish = print
-    def exit_condition(): return False
+    def exit_condition():
+        return False
 
 while not exit_condition():
     try:
-        line = input()
+        line = raw_input()
     except (EOFError, KeyboardInterrupt):
         break
     publish(line)

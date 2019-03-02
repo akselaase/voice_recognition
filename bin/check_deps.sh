@@ -6,23 +6,24 @@ error() {
     echo $2
 }
 
-# Find python 3
-PYTHON="$(which python3.5)"
-if [ -z "$PYTHON" ]; then
-    echo "Didn't find python 3.5, trying 3.6"
-    PYTHON="$(which python3.6)"
+# Find python 2 and 3
+PYTHON2="$(which python2.7)"
+PYTHON3="$(which python3.6)"
+if [ -z "$PYTHON2" ]; then
+    echo "Didn't find Python 2.7, aborting"
+    exit 1
 fi
-if [ -z "$PYTHON" ]; then
-    echo "Didn't find Python 3.5 or 3.6, aborting"
+if [ -z "$PYTHON3" ]; then
+    echo "Didn't find Python 3.6, aborting"
     exit 1
 fi
 
-echo Found $($PYTHON --version)
+echo Found $($PYTHON2 --version 2>&1) and $($PYTHON3 --version)
 
 # Test python modules
 
-$PYTHON -c "import rospy" >/dev/null 2>&1 && echo "Found rospy" || error 0 "Missing package rospy"
-$PYTHON -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 1 "Missing package tensorflow"
+$PYTHON2 -c "import rospy" >/dev/null 2>&1 && echo "Found rospy" || error 0 "Missing package rospy"
+$PYTHON3 -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 1 "Missing package tensorflow"
 
 # Test binaries
 
