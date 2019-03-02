@@ -24,24 +24,23 @@ def sighandler(signal, frame):
 
 
 def readwav(source):
-    with wave.open(source, 'rb') as source:
-        channels = source.getnchannels()
-        samplesize = source.getsampwidth()
-        rate = source.getframerate()
+    with wave.open(source, 'rb') as wf:
+        channels = wf.getnchannels()
+        samplesize = wf.getsampwidth()
+        rate = wf.getframerate()
         if channels != 1 or samplesize != 2:
             raise Exception('Unsupported format.')
-
-        yield rate
-
-        buff_size = 64
-        while running:
-            data = source.readframes(buff_size)
-            num_samples = len(data) // 2
-            if num_samples == 0:
-                logging.info('Read zero frames from input file.')
-                return
-            samples = struct.unpack('<{}h'.format(num_samples), data)
-            yield from samples
+        def _stream_reader():
+            buff_size = 64
+            while running:
+                data = wf.readframes(buff_size)
+                num_samples = len(data) // 2
+                if num_samples == 0:
+                    logging.info('Read zero frames from input file.')
+                    return
+                samples = struct.unpack('<{}h'.format(num_samples), data)
+                yield from samples
+        return rate, _stream_reader()
 
 
 def save_loud_area(rate, data):
@@ -86,8 +85,7 @@ def main():
                 logging.warn(
                     "Couldn't parse thresholds, resorting to auto adjustment.")
 
-    stream = readwav(sys.stdin.buffer)
-    rate = next(stream)
+    rate, stream = readwav(sys.stdin.buffer)
     if auto_adjust:
         process_stream(stream, rate, data_cb=save_loud_area,
                        auto_adjust_duration=FLAGS.auto_adjust)
