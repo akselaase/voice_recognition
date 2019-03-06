@@ -9,8 +9,11 @@ PYTHON2="python2.7"
 PYTHON3="python3.6"
 TEE="tee rec.wav"
 
+cd "$(dirname "$(readlink -f "$0")")"
+
 if [[ ! -f "$PWD/run.sh" ]]; then 
     echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\""
+    echo "You can uncomment the above cd-command if this message is annoying."
     exit 1
 fi
 
