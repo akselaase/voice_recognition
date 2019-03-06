@@ -9,11 +9,11 @@ PYTHON2="python2.7"
 PYTHON3="python3.6"
 TEE="tee rec.wav"
 
-cd "$(dirname "$(readlink -f "$0")")"
+# cd "$(dirname "$(readlink -f "$0")")"
 
 if [[ ! -f "$PWD/run.sh" ]]; then 
-    echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\""
-    echo "You can uncomment the above cd-command if this message is annoying."
+    echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\"" 1>&2
+    echo "You can uncomment the above cd-command if this message is annoying." 1>&2
     exit 1
 fi
 
@@ -22,11 +22,11 @@ if [[ ! -z "$1" && -f "$1" ]]; then
     TEE="cat"
 else
     echo "Double check that the script is using the correct audio input device" \
-         "by using the built in PulseAudio settings panel or pavucontrol"
+         "by using the built in PulseAudio settings panel or pavucontrol" 1>&2
 fi
 
-cat ../data/models/$MODEL/desc.txt
-echo ---
+cat ../data/models/$MODEL/desc.txt 1>&2
+echo --- 1>&2
 
 $RECORDER | $TEE | \
     $PYTHON3 -u ../src/splitter/splitter.py -t 5.0,1.0 | \
