@@ -1,7 +1,7 @@
 import sys
 import logging
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG,
+logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:chain_filter.py: %(message)s')
 
 
@@ -45,6 +45,9 @@ try:
         elif not matches:  # or len(chain) == chain_length:
             logging.info('No matches, clearing.')
             chain = []
-        logging.debug('Current chain: ' + ' '.join(chain))
+        if len(chain) > 0:
+            logging.info('Current chain: ' + ' '.join(chain))
+        else:
+            logging.debug('Current chain: ' + ' '.join(chain))
 except KeyboardInterrupt:
     pass
