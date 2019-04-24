@@ -136,7 +136,7 @@ def process_stream(stream, samplerate, **kwargs):
         # Scan until we find a long enough continuous silence
         # While the length is still too short, ensure the window
         # is maximized while performing at least one step forward,
-        # and check if the window is still silent enough. If not -
+        # and check if the window is silent enough. If not -
         # reset and start again.
         while window.end() - silence_start < minsilencesamples:
             if not maximize(1):
