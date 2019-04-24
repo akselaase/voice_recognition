@@ -1,13 +1,9 @@
-# TODO: Do something more than just echo stdin to the ROS topic.
-
-from __future__ import print_function
 import sys
 import argparse
 import logging
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:publisher.py: %(message)s')
-
 
 try:
     import rospy
@@ -29,7 +25,7 @@ except ImportError:
 
 while not exit_condition():
     try:
-        line = raw_input()
+        line = input()
     except (EOFError, KeyboardInterrupt):
         break
     publish(line)

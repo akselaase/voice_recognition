@@ -3,11 +3,7 @@ export TF_CPP_MIN_LOG_LEVEL=3
 export ROS_IP=$(ip route get 1 | awk '{print $7;exit}')
 export ROS_MASTER_URI=http://localhost:11311/
 MODEL=arse_220k
-#RECORDER="arecord -t wav -r 16000 -c 1 -f S16_LE -d 0 -N -- -"
-RECORDER="rec -q -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
-PYTHON2="python2.7"
-PYTHON3="python3.6"
-TEE="tee rec.wav"
+RECORDER="rec -q --buffer 1024 -r 16000 -b 16 -c 1 -e signed-integer --endian little -t wav -"
 
 # cd "$(dirname "$(readlink -f "$0")")"
 
@@ -17,23 +13,18 @@ if [[ ! -f "$PWD/run.sh" ]]; then
     exit 1
 fi
 
-if [[ ! -z "$1" && -f "$1" ]]; then
-    RECORDER="eval pv -q -L 16000 < $1"
-    TEE="cat"
-else
-    echo "Double check that the script is using the correct audio input device" \
-         "by using the built in PulseAudio settings panel or pavucontrol" 1>&2
-fi
+echo "Double check that the script is using the correct audio input device" \
+     "by using the built in PulseAudio settings panel or pavucontrol" 1>&2
 
 cat ../data/models/$MODEL/desc.txt 1>&2
 echo --- 1>&2
 
-$RECORDER | $TEE | \
-    $PYTHON3 -u ../src/splitter/splitter.py -t 5.0,1.0 | \
-    $PYTHON3 -u ../src/labeler/label_wav.py \
+$RECORDER | \
+    python3 -u ../src/splitter/splitter.py -t 2.0,1.0 | \
+    python3 -u ../src/labeler/label_wav.py \
         --graph=../data/models/$MODEL/graph.pb \
         --labels=../data/models/$MODEL/conv_labels.txt \
         --num_outputs=2 | \
-    $PYTHON3 -u ../src/filter/confidence_filter.py | \
-    $PYTHON3 -u ../src/filter/chain_filter.py | \
-    $PYTHON2 -u ../src/publisher/publisher.py
+    python3 -u ../src/filter/confidence_filter.py | \
+    python3 -u ../src/filter/chain_filter.py | \
+    python3 -u ../src/publisher/publisher.py
