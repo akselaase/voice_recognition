@@ -5,7 +5,7 @@ logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:filter.py: %(message)s')
 
 threshold = 0.6
-runnerup_diff = 0.4
+runnerup = 0.2
 
 signal.signal(signal.SIGINT, lambda _, __: sys.exit())
 
@@ -18,7 +18,7 @@ def handle_labeling(confidences):
     second = confidences[1] if len(confidences) > 1 else ('', 0)
     if first[1] < threshold:
         logging.info("'{}' ({:.2%}) didn't pass threshold.".format(*first))
-    elif first[1] - second[1] < runnerup_diff:
+    elif second[1] > runnerup:
         logging.info("'{}' ({:.2%}) didn't pass filter, '{}' ({:.2%}) was too close.".format(
             *first, *second
         ))
@@ -27,9 +27,9 @@ def handle_labeling(confidences):
         print(first[0])
 
 # Read lines from stdin in the following format:
-#   word1, 0.75
-#   word2, 0.66
-#   word3, 0.01
+#   word1 0.75
+#   word2 0.66
+#   word3 0.01
 #   ---
 # (repeat)
 # Add each word/confidence pair to a list, and when '---'
