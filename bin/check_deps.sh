@@ -20,7 +20,9 @@ fi
 
 $PYTHON -c "import rospy" >/dev/null 2>&1 && echo "Found rospy" || error 0 "Missing package rospy"
 $PYTHON -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 1 "Missing package tensorflow"
-
+if [ $err -ne 0 ]; then
+	echo "Make sure to activate a virtualenv with tensorflow-gpu, rospy, rospkg, and pyyaml installed."
+fi
 # Test binaries
 
 which sox >/dev/null 2>&1 && echo "Found sox" || error 2 "Missing sox"
