@@ -52,10 +52,9 @@ def save_loud_area(rate, data):
         target.setsampwidth(2)
         target.setframerate(rate)
         target.setnframes(num_samples)
-        # TODO: test this change
         conv = struct.pack('<{}h'.format(num_samples), *data)
         target.writeframesraw(conv)
-    logging.debug('Written {} samples to {}'.format(num_samples, outfile))
+    logging.debug('Wrote {} samples to {}'.format(num_samples, outfile))
     print(outfile, flush=True)
     file_count += 1
 

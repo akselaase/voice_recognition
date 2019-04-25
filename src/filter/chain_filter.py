@@ -16,16 +16,17 @@ def equals_chain(candidate):
 
 known_words = ['alpha', 'bravo', 'charlie', 'delta', 'echo',
                'foxtrot', 'golf', 'hotel', 'india', 'juliett']
-#input_chains = list(
-#    map(list, zip(known_words, known_words[1:] + known_words[0:1])))
-input_chains = list(map(lambda s: [s], known_words))
-output_commands = list(map(str, range(10)))
+chain_length = 1
+input_chains = list()
+for index in range(len(known_words)):
+    input_chains.append(tuple((known_words * 2)[index:index+chain_length])) 
+output_commands = {chain: chain[0] for chain, index in zip(input_chains, range(len(input_chains)))}
 
 assert len(input_chains) == len(output_commands)
 
 chain_length = max(map(len, input_chains))
 
-chain = []
+chain = tuple()
 matches = input_chains
 try:
     for line in sys.stdin:
@@ -33,18 +34,18 @@ try:
         if word == '_silence_' or word == '_unknown_':
             logging.debug('Ignoring "%s"', word)
             continue
-        chain.append(word)
+        chain = (*chain, word)
 
         matches = list(filter(matches_chain, input_chains))
         exact_match = next(filter(equals_chain, input_chains), None)
         if exact_match:
-            match_index = input_chains.index(exact_match)
-            logging.info('Exact match: %i, %s', match_index, str(exact_match))
-            print(output_commands[match_index])
-            chain.clear()
+            matching_command = output_commands[exact_match]
+            logging.info('Exact match: %s maps to %s', str(exact_match), matching_command)
+            print(matching_command)
+            chain = tuple()
         elif not matches:  # or len(chain) == chain_length:
             logging.info('No matches, clearing.')
-            chain = []
+            chain = tuple()
         if len(chain) > 0:
             logging.info('Current chain: ' + ' '.join(chain))
         else:
