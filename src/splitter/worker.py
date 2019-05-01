@@ -84,6 +84,8 @@ def process_stream(stream, samplerate, **kwargs):
         logging.debug('Looking for a word.')
 
         word_start = window.start()
+        # Condition: loop as long as the window is too short to contain a whole
+        # word, or as long as the window is too silent. 
         while window.end() - word_start < minwordsamples or window.sum() < wordthreshold:
             # Ensure the window is maximized, stepping
             # forward at least once.
@@ -111,6 +113,8 @@ def process_stream(stream, samplerate, **kwargs):
         # there is a lot of high-amplitude noise in the signal. If this check is
         # skipped, high-amplitude noise might be interpreted as the start of a
         # word, leading to the word being cut off (at minwordsamples).
+        # TODO: Check if the window becomes too long, and possibly discard the
+        # word.
         logging.debug('Looking for short silence.')
         while window.sum() > silencethreshold:
             if not step():
