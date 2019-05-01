@@ -1,0 +1,3 @@
+Words: up down yes no left right on off zero
+Number of training samples: 500 per word
+Iterations: 12000

@@ -1,17 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(voice_recognition)
 
-find_package(catkin REQUIRED COMPONENTS 
-	message_generation 
+find_package(catkin REQUIRED COMPONENTS
 	rospy
-	ascend_msgs
-	geometry_msgs
 )
 
 catkin_python_setup()
 
 catkin_package(
-	CATKIN_DEPENDS 
+	CATKIN_DEPENDS
 	message_runtime
 )
 
@@ -34,11 +31,9 @@ include_directories(
 )
 
 catkin_package(
-	CATKIN_DEPENDS 
-	message_runtime ascend_msgs geometry_msgs
+	CATKIN_DEPENDS
+	message_runtime
 )
 
-catkin_install_python(PROGRAMS bin/hello 
-	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-catkin_install_python(PROGRAMS bin/node_name 
-	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+# catkin_install_python(PROGRAMS bin/rostest.py
+#	DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
