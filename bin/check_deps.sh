@@ -19,13 +19,14 @@ fi
 # Test python modules
 
 $PYTHON -c "import rospy" >/dev/null 2>&1 && echo "Found rospy" || error 0 "Missing package rospy"
-$PYTHON -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 1 "Missing package tensorflow"
+$PYTHON -c "import std_msgs" >/dev/null 2>&1 && echo "Found std_msgs" || error 1 "Missing package std_msgs"
+$PYTHON -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 2 "Missing package tensorflow(-gpu)"
 if [ $err -ne 0 ]; then
 	echo "Make sure to activate a virtualenv with tensorflow-gpu, rospy, rospkg, and pyyaml installed."
 fi
 # Test binaries
 
-which sox >/dev/null 2>&1 && echo "Found sox" || error 2 "Missing sox"
+which sox >/dev/null 2>&1 && echo "Found sox" || error 3 "Missing sox"
 
 # Test local IP address retrieval
 IP="$(ip route get 1 | awk '{print $7;exit}')"
