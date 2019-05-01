@@ -63,7 +63,9 @@ def load_labels(filename):
 def run_graph(wav_data, labels, input_layer_name, output_layer_name,
               num_top_predictions):
     """Runs the audio data through the graph and prints predictions."""
-    with tf.Session() as sess:
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    with tf.Session(config=config) as sess:
         # Feed the audio data as input to the graph.
         #   predictions  will contain a two-dimensional array, where one
         #   dimension represents the input image count, and the other has
