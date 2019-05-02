@@ -20,7 +20,7 @@ cat ../data/models/$MODEL/desc.txt 1>&2
 echo --- 1>&2
 
 $RECORDER | \
-    python3 -u ../src/splitter/splitter.py -t 2.0,1.0 | \
+	python3 -u ../src/splitter/splitter.py -t $(cat thresholds.txt) | \
     python3 -u ../src/labeler/label_wav.py \
         --graph=../data/models/$MODEL/graph.pb \
         --labels=../data/models/$MODEL/conv_labels.txt \

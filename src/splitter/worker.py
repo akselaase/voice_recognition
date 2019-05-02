@@ -17,6 +17,7 @@ def find_loudest_interval(data, count, maxlength):
             maxind, maxval = scanner.start(), scanner.sum()
     return maxind
 
+sums = []
 
 def process_stream(stream, samplerate, **kwargs):
     data_cb = kwargs.get('data_cb', None)
@@ -50,12 +51,12 @@ def process_stream(stream, samplerate, **kwargs):
     logging.info('Word threshold is {:.3%} and silence threshold is {:.3%}.'.format(
         wordthreshold, silencethreshold))
 
-    wordthreshold *= 32767
-    silencethreshold *= 32767
+    wordthreshold *= 32768 ** 2
+    silencethreshold *= 32768 ** 2
 
     windowsamples = minwordsamples
-    wordthreshold = windowsamples * wordthreshold ** 2
-    silencethreshold = windowsamples * silencethreshold ** 2
+    wordthreshold = windowsamples * wordthreshold 
+    silencethreshold = windowsamples * silencethreshold 
     samples = []
     window = Window(windowsamples, samples)
 
@@ -67,6 +68,7 @@ def process_stream(stream, samplerate, **kwargs):
         sample = min(max(sample, -32768), 32767)
         samples.append(sample)
         window.step()
+        sums.append(window.sum())
         return True
 
     def maximize(min_steps=0):
