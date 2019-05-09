@@ -6,6 +6,10 @@ error() {
     echo $2
 }
 
+if [[ -z "$VIRTUAL_ENV" && -f "../venv/bin/activate" ]]; then
+	. ../venv/bin/activate
+fi
+
 PYTHON="$(which python3 2>/dev/null)"
 if [ -z "$PYTHON" ]; then
     echo "Didn't find Python 3, aborting."
@@ -24,7 +28,7 @@ $PYTHON -c "import rospy" >/dev/null 2>&1 && echo "Found rospy" || error 0 "Miss
 $PYTHON -c "import std_msgs" >/dev/null 2>&1 && echo "Found std_msgs" || error 0 "Missing package std_msgs"
 $PYTHON -c "import tensorflow" >/dev/null 2>&1 && echo "Found tensorflow" || error 0 "Missing package tensorflow(-gpu)"
 if [ $err -ne 0 ]; then
-	echo "Make sure to activate a virtualenv with tensorflow-gpu, rospy, rospkg, and pyyaml installed."
+	echo "Make sure to install the packages tensorflow-gpu, rospy, rospkg, and pyyaml."
 fi
 # Test binaries
 

@@ -7,10 +7,14 @@ RECORDER="rec -q --buffer 1024 -r 16000 -b 16 -c 1 -e signed-integer --endian li
 
 # cd "$(dirname "$(readlink -f "$0")")"
 
-if [[ ! -f "$PWD/run.sh" ]]; then 
+if [ ! -f "$PWD/run.sh" ]; then 
     echo "This script should be run from the bin/ folder or with \"roslaunch voice_recognition main.launch\"" 1>&2
     echo "You can uncomment the above cd-command if this message is annoying." 1>&2
     exit 1
+fi
+
+if [[ -z "$VIRTUAL_ENV" && -f "../venv/bin/activate" ]]; then
+	. ../venv/bin/activate
 fi
 
 echo "Double check that the script is using the correct audio input device" \
@@ -27,4 +31,4 @@ $RECORDER | \
         --num_outputs=2 | \
     python3 -u ../src/filter/confidence_filter.py | \
     python3 -u ../src/filter/chain_filter.py | \
-    python3 -u ../src/publisher/publisher.py
+    python3 -u ../src/publisher/publisher.py "$@"
