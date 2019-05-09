@@ -2,3 +2,4 @@
 *.wav
 speech_commands_train/
 aiy_speech_dataset/
+bin/sums.bin

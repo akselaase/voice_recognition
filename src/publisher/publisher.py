@@ -5,7 +5,13 @@ import logging
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:publisher.py: %(message)s')
 
+stdout = False
 try:
+    if '--stdout' in sys.argv:
+        logging.info('Using stdout as publisher target.')
+        stdout = True
+        import non_existent_random_package_name_to_trigger_exception
+
     import rospy
     import std_msgs
     rospy.init_node('voice_recognition')
@@ -17,8 +23,9 @@ try:
         pub.publish(line)
     exit_condition = rospy.is_shutdown
 except ImportError:
-    logging.warning(
-        'Failed to import rospy or std_msgs, will publish to stdout instead.')
+    if not stdout:
+        logging.warning(
+            'Failed to import rospy or std_msgs, will publish to stdout instead.')
     publish = print
     def exit_condition():
         return False

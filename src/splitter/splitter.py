@@ -3,10 +3,11 @@ import sys
 import wave
 import struct
 import signal
+import pickle
 import logging
 import argparse
 import tempfile
-from worker import process_stream
+from worker import process_stream, sums
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO,
                     format='[%(levelname)s]:splitter.py: %(message)s')
@@ -91,6 +92,8 @@ def main():
     else:
         process_stream(stream, rate, data_cb=save_loud_area,
                        t_loudness=loudness / 100, t_silence=silence / 100)
+
+    pickle.dump(sums, open('sums.bin', 'wb'))
 
     logging.debug('Exiting splitter.py')
     if file_count == 0:
