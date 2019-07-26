@@ -7,8 +7,8 @@ import itertools
 import tempfile
 
 clean_output_dirs = False
-input_dirs = ['arse_cleaned', 'aiy_speech_dataset']
-output_dir = 'samples_augmented'
+input_dir = 'arse_cleaned'
+output_dir = 'arse_augmented'
 target_count_per_word = 5000
 
 
@@ -145,8 +145,8 @@ def perform_pass(pass_input_dir, pass_output_dir, effect_pass):
     effects, target_file_count = effect_pass
     all_files = list(filter(lambda entry: entry.is_file() and entry.name.endswith('.wav'),
                             os.scandir(pass_input_dir)))
-    multiplier = min(int(target_file_count / len(all_files) + 0.5), 500)
-    print('Multiplier: {}, Num Files: {}'.format(multiplier, min(multiplier * len(all_files), target_file_count)))
+    multiplier = int(target_file_count / len(all_files) + 0.5)
+    print('Multiplier:', multiplier)
     for input_file in all_files:
         file_multiplier = min(target_file_count, multiplier)
         augment_file(input_file.path, pass_output_dir,
@@ -175,11 +175,10 @@ def perform_all_passes(input_dir, output_dir):
 
 
 def augment_all(words=[]):
-    for input_dir in input_dirs:
-        for word in os.scandir(input_dir):
-            if not words or word.name in words:
-                word_output_dir = os.path.join(output_dir, word.name)
-                perform_all_passes(word.path, word_output_dir)
+    for word in os.scandir(input_dir):
+        if not words or word.name in words:
+            word_output_dir = os.path.join(output_dir, word.name)
+            perform_all_passes(word.path, word_output_dir)
 
 
 def test_effect(input_file, effect):
