@@ -147,8 +147,11 @@ def perform_pass(pass_input_dir, pass_output_dir, effect_pass):
     effects, target_file_count = effect_pass
     all_files = list(filter(lambda entry: entry.is_file() and entry.name.endswith('.wav'),
                             os.scandir(pass_input_dir)))
-    multiplier = min(int(target_file_count / len(all_files) + 0.5), 500)
-    print('Multiplier: {}, Num Files: {}'.format(multiplier, min(multiplier * len(all_files), target_file_count)))
+    multiplier = int(target_file_count / len(all_files) + 0.5)
+    if multiplier > 500:
+        multiplier = 500
+        target_file_count = len(all_files) * multiplier
+    print('Multiplier: {}, Num Files: {}'.format(multiplier, target_file_count)
     for input_file in all_files:
         file_multiplier = min(target_file_count, multiplier)
         augment_file(input_file.path, pass_output_dir,
