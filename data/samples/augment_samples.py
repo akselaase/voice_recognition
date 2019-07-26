@@ -7,8 +7,10 @@ import itertools
 import tempfile
 
 clean_output_dirs = False
-input_dirs = ['arse_cleaned', 'aiy_speech_dataset']
-output_dir = 'samples_augmented'
+io_dirs = {
+        'arse_cleaned': 'samples_augmented', 
+        'aiy_speech_dataset': 'samples_augmented'
+        }
 target_count_per_word = 5000
 
 
@@ -175,7 +177,7 @@ def perform_all_passes(input_dir, output_dir):
 
 
 def augment_all(words=[]):
-    for input_dir in input_dirs:
+    for input_dir, output_dir in io_dirs.items():
         for word in os.scandir(input_dir):
             if not words or word.name in words:
                 word_output_dir = os.path.join(output_dir, word.name)
