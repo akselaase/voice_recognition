@@ -178,7 +178,7 @@ def perform_all_passes(input_dir, output_dir):
 
 def augment_all(words=[]):
     for input_dir, output_dir in io_dirs.items():
-        for word in os.scandir(input_dir):
+        for word in filter(lambda d: d.is_dir(), os.scandir(input_dir)):
             if not words or word.name in words:
                 word_output_dir = os.path.join(output_dir, word.name)
                 perform_all_passes(word.path, word_output_dir)
